@@ -10,89 +10,167 @@
 #include <string>
 namespace util 
 {
-    std::set<char> alfabeto;
-    const char alfa[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    std::string LerFrase(std:: string nomeArquivo) 
+    using namespace std;
+    set<char> letterSet;
+    auto shiftUp = [](char letter, int shift) { return letter + shift; };
+    auto shiftDown = [](char letter, int shift) { return letter - shift; };
+    // const char alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    string ReadPhrase(string fileName) 
     {
-        std::string frase;
-        std::ifstream arquivo;
-        arquivo.open(nomeArquivo);
-        if (arquivo.is_open()) 
+        string phrase;
+        ifstream file;
+        file.open(fileName);
+        if (file.is_open()) 
         {
-            getline(arquivo, frase);
-            arquivo.close();
+            getline(file, phrase);
+            file.close();
         }
-        return frase;
+        return phrase;
     };
 
-    void CarregaAlfabeto()
+    void LoadLetterSet()
     {
         for (char c = 'A'; c <= 'Z'; c++)
         {
-            alfabeto.insert(c);
+            letterSet.insert(c);
             std::cout << c << std::endl;
         }
         
     }
+
+    template <typename G>
+    char LetterShift(char letter, int shift, G shiftFunction)
+    {
+        if(letter > 'A' && letter < 'Z')
+        {
+            return LetterShiftUppercase(letter, shift, shiftFunction);
+        }
+        else if(letter > 'a' && letter < 'z')
+        {
+            return LetterShiftLowercase(letter, shift, shiftFunction);
+        }
+        else if(letter > '0' && letter < '9')
+        {
+            return NumberShift(letter, shift, shiftFunction);
+        }
+        else
+        {
+            return letter;
+        }
+    }
+
+    template <typename T>
+    char LetterShiftUppercase(char letter, int shift, T shiftFunction)
+    {
+
+        if(shiftFunction(letter, shift) < 'A')
+        {
+            return shiftFunction(letter, shift) + 26;
+        } 
+        else if(shiftFunction(letter, shift) > 'Z')
+        {
+            return shiftFunction(letter, shift) - 26;
+        }
+        else 
+        {
+            return shiftFunction(letter, shift);
+        }
+    }
+
+    template <typename F>
+    char LetterShiftLowercase(char letter, int shift, F shiftFunction)
+    {
+        if(shiftFunction(letter, shift) < 'a')
+        {
+            return 'z' - ('a' - shiftFunction(letter, shift)) + 1;
+        } 
+        else if(shiftFunction(letter, shift) > 'z')
+        {
+            return 'a' + (shiftFunction(letter, shift) - 'z') - 1;
+        }
+        else 
+        {
+            return shiftFunction(letter, shift);
+        }
+    }
+
+    template <typename H>
+    char NumberShift(char number, int shift, H shiftFunction)
+    {
+        if(shiftFunction(number, shift) < '0')
+        {
+            return shiftFunction(number, shift) + 10;
+        }
+        else if(shiftFunction(number, shift) > '9')
+        {
+            return shiftFunction(number, shift) - 10;
+        }
+        else
+        {
+            return shiftFunction(number, shift);
+        }
+    }
+
 }
 
-std::string AplicarCifra(std::string frase)
+std::string ApplyCaesarCyphre(std::string phrase)
 {
-    std::string fraseCifrada = " ";
-    for (int i = 0; i < frase.size(); i++)
+    std::string cyphredPhrase = " ";
+    for (int i = 0; i < phrase.size(); i++)
     {
-        if(frase[i] == ' ')
+        if(phrase[i] == ' ')
         {
-            fraseCifrada += ' ';
+            cyphredPhrase += ' ';
             continue;
         }
-        fraseCifrada += (frase[i] + 3);
+        cyphredPhrase+= util::LetterShift(phrase[i], 3, util::shiftUp);
+        // cyphredPhrase += (phrase[i] + 3);
     }
-    return fraseCifrada;
+    return cyphredPhrase;
 }
 
-void EscreverFrase(std::string nomeArquivo, std::string frase)
+void WritePhrase(std::string fileName, std::string phrase)
 {
-    std::ofstream arquivo;
-    arquivo.open(nomeArquivo);
-    if (arquivo.is_open())
+    std::ofstream file;
+    file.open(fileName, std::ios::out);
+    if (file.is_open())
     {
-        arquivo << frase;
-        arquivo.close();
+        file << phrase;
+        file.close();
     }
 }
 
-void ForcaBruta(std::string fraseCriptografada)
+void BruteForce(std::string cyphredPhrase)
 {
     for (int i = 0; i < 26; i++)
     {
-        std::string fraseDecifrada = " ";
-        for (int j = 0; j < fraseCriptografada.size(); j++)
+        std::string decyphredPhrase = " ";
+        for (int j = 0; j < cyphredPhrase.size(); j++)
         {
-            if(fraseCriptografada[j] == ' ')
+            if(cyphredPhrase[j] == ' ')
             {
-                fraseDecifrada += ' ';
+                decyphredPhrase += ' ';
                 continue;
             }
-            fraseDecifrada += util::alfa[((char)fraseCriptografada[j] - i)%26];
+            decyphredPhrase += util::LetterShift(cyphredPhrase[j], i, util::shiftDown);
         }
-        std::cout << "Tentativa " << i << std::endl;
-        std::cout << fraseDecifrada << std::endl;
+        std::cout << "Try " << i << std::endl;
+        std::cout << decyphredPhrase << std::endl;
     }
 }
 
-std::string DesaplicaCifra(std::string fraseCifrada)
+std::string DeapplyCyphre(std::string cyphredPhrase)
 {
-    std::string frase = " ";
-    for (int i = 0; i < fraseCifrada.size(); i++)
+    std::string phrase = " ";
+    for (int i = 0; i < cyphredPhrase.size(); i++)
     {
-        if(fraseCifrada[i] == ' ')
+        if(cyphredPhrase[i] == ' ')
         {
-            frase += ' ';
+            phrase += ' ';
             continue;
         }
-        frase += (fraseCifrada[i] - 3);
+        phrase += util::LetterShift(cyphredPhrase[i], 3, util::shiftDown);
     }
-    return frase;
+    return phrase;
 }
 #endif /* FILEREADING_H_ */

@@ -1,1 +1,2 @@
-#define PROJECT_DIR "/c/Users/nsm44/Desktop/seguranca"
+#define PROJECT_DIR "C:/Users/Nicolas/Desktop/security-project"
+#define OUTPUT_DIR "C:/Users/Nicolas/Desktop/security-project/output"
