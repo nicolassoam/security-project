@@ -11,8 +11,8 @@
 namespace util 
 {
     using namespace std;
-    auto shiftUp = [](char letter, int shift) { return (char)(letter + shift); };
-    auto shiftDown = [](char letter, int shift) { return (char)(letter - shift); };
+    auto shiftUp = [](char letter, int shift) { return letter + shift; };
+    auto shiftDown = [](char letter, int shift) { return letter - shift; };
 
     string ReadPhrase(string fileName) 
     {
@@ -43,11 +43,11 @@ namespace util
     {
         if(shiftFunction(letter, shift) < 'a')
         {
-            return 'z' - ('a' - shiftFunction(letter, shift)) + 1;
+            return shiftFunction(letter, shift) + 26;
         } 
         else if(shiftFunction(letter, shift) > 'z')
         {
-            return 'a' + (shiftFunction(letter, shift) - 'z') - 1;
+            return shiftFunction(letter, shift) - 26;
         }
         else 
         {
@@ -58,15 +58,15 @@ namespace util
     template <typename G>
     char LetterShift(char letter, int shift, G shiftFunction)
     {
-        if(letter > 'A' && letter < 'Z')
+        if(letter >= 'A' && letter <= 'Z')
         {
             return LetterShiftUppercase(letter, shift, shiftFunction);
         }
-        else if(letter > 'a' && letter < 'z')
+        else if(letter >= 'a' && letter <= 'z')
         {
             return LetterShiftLowercase(letter, shift, shiftFunction);
         }
-        else if(letter > '0' && letter < '9')
+        else if(letter >= '0' && letter <= '9')
         {
             return NumberShift(letter, shift, shiftFunction);
         }
