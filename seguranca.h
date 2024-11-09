@@ -1,5 +1,5 @@
-#ifndef FILEREADING_H_
-#define FILEREADING_H_
+#ifndef SECURITY_H_
+#define SECURITY_H_
 
 #include <iostream>
 #include <fstream>
@@ -173,4 +173,4 @@ std::string DeapplyCyphre(std::string cyphredPhrase)
     }
     return phrase;
 }
-#endif /* FILEREADING_H_ */
+#endif /* SECURITY_H_ */
