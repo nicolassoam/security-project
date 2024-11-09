@@ -11,8 +11,8 @@
 namespace util 
 {
     using namespace std;
-    auto shiftUp = [](char letter, int shift) { return letter + shift; };
-    auto shiftDown = [](char letter, int shift) { return letter - shift; };
+    auto shiftUp = [](char letter, int shift) { return (char)(letter + shift); };
+    auto shiftDown = [](char letter, int shift) { return (char)(letter - shift); };
 
     string ReadPhrase(string fileName) 
     {
