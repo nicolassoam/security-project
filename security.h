@@ -8,11 +8,14 @@
 #include <map>
 #include <sstream>
 #include <string>
+
 namespace util 
 {
     using namespace std;
     auto shiftUp = [](char letter, int shift) { return (char)(letter + shift); };
     auto shiftDown = [](char letter, int shift) { return (char)(letter - shift); };
+
+    const char mostFrequentLetters[] = "EARIOTNSLCUDPMHGBFYWKVXZJQ";
 
     string ReadPhrase(string fileName) 
     {
@@ -115,51 +118,51 @@ namespace util
 
 }
 
-std::string ApplyCaesarCyphre(std::string phrase)
+std::string ApplyCaesarCipher(std::string phrase)
 {
-    std::string cyphredPhrase = " ";
+    std::string cipheredPhrase = " ";
     for (int i = 0; i < phrase.size(); i++)
     {
         if(phrase[i] == ' ')
         {
-            cyphredPhrase += ' ';
+            cipheredPhrase += ' ';
             continue;
         }
-        cyphredPhrase+= util::LetterShift(phrase[i], 3, util::shiftUp);
+        cipheredPhrase+= util::LetterShift(phrase[i], 3, util::shiftUp);
     }
-    return cyphredPhrase;
+    return cipheredPhrase;
 }
 
-void BruteForce(std::string cyphredPhrase)
+void BruteForce(std::string cipheredPhrase)
 {
     for (int i = 1; i <= 26; i++)
     {
-        std::string decyphredPhrase = " ";
-        for (int j = 0; j < cyphredPhrase.size(); j++)
+        std::string decipheredPhrase = " ";
+        for (int j = 0; j < cipheredPhrase.size(); j++)
         {
-            if(cyphredPhrase[j] == ' ')
+            if(cipheredPhrase[j] == ' ')
             {
-                decyphredPhrase += ' ';
+                decipheredPhrase += ' ';
                 continue;
             }
-            decyphredPhrase += util::LetterShift(cyphredPhrase[j], i, util::shiftDown);
+            decipheredPhrase += util::LetterShift(cipheredPhrase[j], i, util::shiftDown);
         }
         std::cout << "Try " << i << std::endl;
-        std::cout << decyphredPhrase << std::endl;
+        std::cout << decipheredPhrase << std::endl;
     }
 }
 
-std::string DeapplyCyphre(std::string cyphredPhrase)
+std::string DeapplyCipher(std::string cipheredPhrase)
 {
     std::string phrase = " ";
-    for (int i = 0; i < cyphredPhrase.size(); i++)
+    for (int i = 0; i < cipheredPhrase.size(); i++)
     {
-        if(cyphredPhrase[i] == ' ')
+        if(cipheredPhrase[i] == ' ')
         {
             phrase += ' ';
             continue;
         }
-        phrase += util::LetterShift(cyphredPhrase[i], 3, util::shiftDown);
+        phrase += util::LetterShift(cipheredPhrase[i], 3, util::shiftDown);
     }
     return phrase;
 }
