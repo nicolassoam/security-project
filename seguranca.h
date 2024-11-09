@@ -13,7 +13,7 @@ namespace util
     using namespace std;
     auto shiftUp = [](char letter, int shift) { return (char)(letter + shift); };
     auto shiftDown = [](char letter, int shift) { return (char)(letter - shift); };
-    // const char alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     string ReadPhrase(string fileName) 
     {
         string phrase;
@@ -37,7 +37,6 @@ namespace util
             file.close();
         }
     }
-
 
     template <typename F>
     char LetterShiftLowercase(char letter, int shift, F shiftFunction)
@@ -125,7 +124,6 @@ std::string ApplyCaesarCyphre(std::string phrase)
             continue;
         }
         cyphredPhrase+= util::LetterShift(phrase[i], 3, util::shiftUp);
-        // cyphredPhrase += (phrase[i] + 3);
     }
     return cyphredPhrase;
 }
