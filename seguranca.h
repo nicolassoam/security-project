@@ -11,9 +11,8 @@
 namespace util 
 {
     using namespace std;
-    set<char> letterSet;
-    auto shiftUp = [](char letter, int shift) { return letter + shift; };
-    auto shiftDown = [](char letter, int shift) { return letter - shift; };
+    auto shiftUp = [](char letter, int shift) { return (char)(letter + shift); };
+    auto shiftDown = [](char letter, int shift) { return (char)(letter - shift); };
     // const char alpha[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string ReadPhrase(string fileName) 
     {
@@ -28,14 +27,33 @@ namespace util
         return phrase;
     };
 
-    void LoadLetterSet()
+    void WritePhrase(string fileName, string phrase)
     {
-        for (char c = 'A'; c <= 'Z'; c++)
+        ofstream file;
+        file.open(fileName, ios::out);
+        if (file.is_open())
         {
-            letterSet.insert(c);
-            std::cout << c << std::endl;
+            file << phrase;
+            file.close();
         }
-        
+    }
+
+
+    template <typename F>
+    char LetterShiftLowercase(char letter, int shift, F shiftFunction)
+    {
+        if(shiftFunction(letter, shift) < 'a')
+        {
+            return 'z' - ('a' - shiftFunction(letter, shift)) + 1;
+        } 
+        else if(shiftFunction(letter, shift) > 'z')
+        {
+            return 'a' + (shiftFunction(letter, shift) - 'z') - 1;
+        }
+        else 
+        {
+            return shiftFunction(letter, shift);
+        }
     }
 
     template <typename G>
@@ -59,41 +77,6 @@ namespace util
         }
     }
 
-    template <typename T>
-    char LetterShiftUppercase(char letter, int shift, T shiftFunction)
-    {
-
-        if(shiftFunction(letter, shift) < 'A')
-        {
-            return shiftFunction(letter, shift) + 26;
-        } 
-        else if(shiftFunction(letter, shift) > 'Z')
-        {
-            return shiftFunction(letter, shift) - 26;
-        }
-        else 
-        {
-            return shiftFunction(letter, shift);
-        }
-    }
-
-    template <typename F>
-    char LetterShiftLowercase(char letter, int shift, F shiftFunction)
-    {
-        if(shiftFunction(letter, shift) < 'a')
-        {
-            return 'z' - ('a' - shiftFunction(letter, shift)) + 1;
-        } 
-        else if(shiftFunction(letter, shift) > 'z')
-        {
-            return 'a' + (shiftFunction(letter, shift) - 'z') - 1;
-        }
-        else 
-        {
-            return shiftFunction(letter, shift);
-        }
-    }
-
     template <typename H>
     char NumberShift(char number, int shift, H shiftFunction)
     {
@@ -108,6 +91,24 @@ namespace util
         else
         {
             return shiftFunction(number, shift);
+        }
+    }
+
+    template <typename I>
+    char LetterShiftUppercase(char letter, int shift, I shiftFunction)
+    {
+
+        if(shiftFunction(letter, shift) < 'A')
+        {
+            return shiftFunction(letter, shift) + 26;
+        } 
+        else if(shiftFunction(letter, shift) > 'Z')
+        {
+            return shiftFunction(letter, shift) - 26;
+        }
+        else 
+        {
+            return shiftFunction(letter, shift);
         }
     }
 
@@ -127,17 +128,6 @@ std::string ApplyCaesarCyphre(std::string phrase)
         // cyphredPhrase += (phrase[i] + 3);
     }
     return cyphredPhrase;
-}
-
-void WritePhrase(std::string fileName, std::string phrase)
-{
-    std::ofstream file;
-    file.open(fileName, std::ios::out);
-    if (file.is_open())
-    {
-        file << phrase;
-        file.close();
-    }
 }
 
 void BruteForce(std::string cyphredPhrase)
