@@ -130,7 +130,7 @@ std::string ApplyCaesarCyphre(std::string phrase)
 
 void BruteForce(std::string cyphredPhrase)
 {
-    for (int i = 0; i < 26; i++)
+    for (int i = 1; i <= 26; i++)
     {
         std::string decyphredPhrase = " ";
         for (int j = 0; j < cyphredPhrase.size(); j++)
