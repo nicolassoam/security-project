@@ -37,7 +37,8 @@ namespace util
             file.close();
         }
     }
-
+    
+#pragma region LetterShifting
     template <typename F>
     char LetterShiftLowercase(char letter, int shift, F shiftFunction)
     {
@@ -110,6 +111,7 @@ namespace util
             return shiftFunction(letter, shift);
         }
     }
+#pragma endregion LetterShifting
 
 }
 
