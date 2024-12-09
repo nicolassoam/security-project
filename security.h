@@ -19,6 +19,32 @@ namespace util
     map<char, int> letterFrequency;
     priority_queue<pair<int, char>> sortedMostFrequent;
     const char mostFrequentLetters[] = "EARIOTNSLCUDPMHGBFYWKVXZJQ";
+    map<char, map<char,char>> vigenereTable;
+
+    void VigenereTable()
+    {
+        for(int i = 0; i < 26; i++)
+        {
+             //A = ABCDEFGHIJKLMNOPQRSTUVWXYZ
+             //B = BCDEFGHIJKLMNOPQRSTUVWXYZA
+            map<char, char> row;
+            vigenereTable.insert(pair<char,map<char,char>>('A' + i, row));
+            for(int j = 0; j < 26; j++)
+            {
+                vigenereTable['A' + i].insert(pair<char,char>('A' + j, 'A' + (j + i) % 26));
+            }
+        }
+
+        for(int k = 0; k < 26; k++)
+        {
+            map<char, char> row;
+            vigenereTable.insert(pair<char,map<char,char>>('a' + k, row));
+            for(int l = 0; l < 26; l++)
+            {
+                vigenereTable['a' + k].insert(pair<char,char>('a' + l, 'a' + (l + k) % 26));
+            }
+        }
+    }
 
     string ReadPhrase(string fileName) 
     {
@@ -49,6 +75,19 @@ namespace util
         }
         return text;
     }
+    
+    char GetKeyFromMap(map<char,char>m,char value)
+    {
+        for(auto it = m.begin(); it != m.end(); it++)
+        {
+            if(it->second == value)
+            {
+                return it->first;
+            }
+        }
+        return ' ';
+
+    }
 
     void WritePhrase(string fileName, string phrase)
     {
@@ -59,6 +98,8 @@ namespace util
             file << phrase;
             file.close();
         }
+        std::cout << "Frase escrita: " << phrase << std::endl;
+        std::cout << "Output no arquivo " << fileName << std::endl;
     }
 
     void WriteText(string fileName, vector<string>text)
@@ -204,9 +245,11 @@ namespace util
 
 }
 
+
+//Encriptação com cifra de Caesar
 std::string ApplyCaesarCipher(std::string phrase)
 {
-    std::string cipheredPhrase = " ";
+    std::string cipheredPhrase = "";
     for (int i = 0; i < phrase.size(); i++)
     {
         if(phrase[i] == ' ')
@@ -219,11 +262,96 @@ std::string ApplyCaesarCipher(std::string phrase)
     return cipheredPhrase;
 }
 
+#pragma region Vignere
+
+std::string ApplyVigenereCipher(std::string phrase, std::string key)
+{
+    std::string cipheredPhrase = "";
+    
+    for(int i = 0; i < phrase.size(); i++)
+    {
+        if(phrase[i] == ' ' || phrase[i] == ',' || phrase[i] == '.' || phrase[i] == ';')
+        {
+            cipheredPhrase += phrase[i];
+            continue;
+        }
+        cipheredPhrase += util::vigenereTable[key[i]][phrase[i]];
+    }
+
+    return cipheredPhrase;
+}
+
+std::string DeapplyVigenereCipher(std::string phrase, std::string key)
+{
+    std::string decipheredPhrase = "";
+    
+    //inverse of encryption
+    for(int i = 0; i < phrase.size(); i++)
+    {
+        if(phrase[i] == ' ' || phrase[i] == ',' || phrase[i] == '.' || phrase[i] == ';')
+        {
+            decipheredPhrase += phrase[i];
+            continue;
+        }
+        //get column label
+        decipheredPhrase += util::GetKeyFromMap(util::vigenereTable[key[i]], phrase[i]);
+    }
+    return decipheredPhrase;
+}
+#pragma endregion Vignere
+
+std::string ApplyRailFenceCipher(std::string text, int key)
+{
+    // create the matrix to cipher plain text
+    // key = rows , length(text) = columns
+    char ** rail = new char*[key];
+
+    for(int i = 0; i < key; i++)
+    {
+        rail[i] = new char[text.length()];
+    }
+ 
+    // filling the rail matrix to distinguish filled
+    // spaces from blank ones
+    for (int i=0; i < key; i++)
+        for (int j = 0; j < text.length(); j++)
+            rail[i][j] = '\n';
+ 
+    // to find the direction
+    bool dir_down = false;
+    int row = 0, col = 0;
+ 
+    for (int i=0; i < text.length(); i++)
+    {
+        // check the direction of flow
+        // reverse the direction if we've just
+        // filled the top or bottom rail
+        if (row == 0 || row == key-1)
+            dir_down = !dir_down;
+ 
+        // fill the corresponding alphabet
+        rail[row][col++] = text[i];
+ 
+        // find the next row using direction flag
+        dir_down?row++ : row--;
+    }
+ 
+    //now we can construct the cipher using the rail matrix
+    std::string result;
+    for (int i=0; i < key; i++)
+        for (int j=0; j < text.length(); j++)
+            if (rail[i][j]!='\n')
+                result.push_back(rail[i][j]);
+ 
+    return result;
+}
+
+// Decriptação de cifra de Caesar utilizando força bruta
 void BruteForce(std::string cipheredPhrase)
 {
     for (int i = 1; i <= 26; i++)
     {
-        std::string decipheredPhrase = " ";
+        std::string decipheredPhrase = "";
         for (int j = 0; j < cipheredPhrase.size(); j++)
         {
             if(cipheredPhrase[j] == ' ')
@@ -262,7 +390,7 @@ void MostFrequent(std::string cipheredPhrase)
     }
     //swap most frequent char from phrase with most frequent char from language
     std::map<char,char> equivalence = util::RankEquivalence(sortedLetterFrequency);
-    std::string decipheredPhrase = " ";
+    std::string decipheredPhrase = "";
 
     for(int i = 0; i < cipheredPhrase.size(); i++)
     {
@@ -309,10 +437,10 @@ void MostFrequentBig(std::vector<std::string> cipheredPhrase)
     //swap most frequent char from phrase with most frequent char from language
     std::map<char,char> equivalence = util::RankEquivalence(sortedLetterFrequency);
     std::vector<std::string> decipheredPhrase;
-    std::string dummy = " ";
+    std::string dummy = "";
     for(int i = 0; i < cipheredPhrase.size(); i++)
     {
-        dummy = " ";
+        dummy = "";
         for(int j = 0; j < cipheredPhrase[i].size(); j++)
         {
             dummy += equivalence[cipheredPhrase[i][j]];
@@ -324,9 +452,10 @@ void MostFrequentBig(std::vector<std::string> cipheredPhrase)
     util::WriteText((std::string)OUTPUT_DIR + "/textoDecifrado.txt", decipheredPhrase);
 }
 
+//Decriptação da cifra de Caesar
 std::string DeapplyCipher(std::string cipheredPhrase)
 {
-    std::string phrase = " ";
+    std::string phrase = "";
     for (int i = 0; i < cipheredPhrase.size(); i++)
     {
         if(cipheredPhrase[i] == ' ')

@@ -1,2 +1,3 @@
 #cmakedefine PROJECT_DIR "@PROJECT_DIR@"
 #cmakedefine OUTPUT_DIR "@OUTPUT_DIR@"
+#cmakedefine INPUT_DIR "@INPUT_DIR@"    
