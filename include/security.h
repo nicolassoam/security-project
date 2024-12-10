@@ -245,7 +245,7 @@ namespace util
 
 }
 
-
+#pragma region CaesarCipher
 //Encriptação com cifra de Caesar
 std::string ApplyCaesarCipher(std::string phrase)
 {
@@ -261,6 +261,23 @@ std::string ApplyCaesarCipher(std::string phrase)
     }
     return cipheredPhrase;
 }
+
+//Decriptação da cifra de Caesar
+std::string DeapplyCipher(std::string cipheredPhrase)
+{
+    std::string phrase = "";
+    for (int i = 0; i < cipheredPhrase.size(); i++)
+    {
+        if(cipheredPhrase[i] == ' ')
+        {
+            phrase += ' ';
+            continue;
+        }
+        phrase += util::LetterShift(cipheredPhrase[i], -3);
+    }
+    return phrase;
+}
+#pragma endregion CaesarCipher
 
 #pragma region Vignere
 
@@ -300,6 +317,8 @@ std::string DeapplyVigenereCipher(std::string phrase, std::string key)
 }
 #pragma endregion Vignere
 
+
+#pragma region RailFencer
 std::string ApplyRailFenceCipher(std::string text, int key)
 {
     // create the matrix to cipher plain text
@@ -345,6 +364,7 @@ std::string ApplyRailFenceCipher(std::string text, int key)
  
     return result;
 }
+#pragma endregion RailFencer
 
 // Decriptação de cifra de Caesar utilizando força bruta
 void BruteForce(std::string cipheredPhrase)
@@ -452,19 +472,5 @@ void MostFrequentBig(std::vector<std::string> cipheredPhrase)
     util::WriteText((std::string)OUTPUT_DIR + "/textoDecifrado.txt", decipheredPhrase);
 }
 
-//Decriptação da cifra de Caesar
-std::string DeapplyCipher(std::string cipheredPhrase)
-{
-    std::string phrase = "";
-    for (int i = 0; i < cipheredPhrase.size(); i++)
-    {
-        if(cipheredPhrase[i] == ' ')
-        {
-            phrase += ' ';
-            continue;
-        }
-        phrase += util::LetterShift(cipheredPhrase[i], -3);
-    }
-    return phrase;
-}
+
 #endif /* SECURITY_H_ */
