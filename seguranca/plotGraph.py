@@ -11,9 +11,11 @@ def plotDecrypt():
     for line in lines:
         line = line.split(':')
         time = line[2] +":" + line[3] 
-        time = datetime.datetime.strptime(time[:-1], '%M:%S.%f')
+        time = datetime.datetime.strptime(time[:-2], '%M:%S.%f')
+        time = time.minute*60 + time.second + time.microsecond/1000000
         x.append(line[0])
         y.append(time)
+        print(time)
     matplotlib.pyplot.plot(x, y)
     matplotlib.pyplot.xlabel('Hash')
     matplotlib.pyplot.ylabel('Time')
